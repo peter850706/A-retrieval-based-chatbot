@@ -13,7 +13,6 @@ class DualEncoderNet(nn.Module):
         num_layers (int): Number of recurrent layers. E.g., setting num_layers=2 would mean stacking two GRUs together to form a stacked GRU, with the second GRU taking in outputs of the first GRU and computing the final results.
         dropout (int): If non-zero, introduces a Dropout layer on the outputs of each GRU layer except the last layer, with dropout probability equal to dropout
         bidirectional (bool): If True, becomes a bidirectional GRU.
-        pooling_mode (str): The pooling mode to condense the rnn output features
     """
     def __init__(self, dim_embedding, rnn_module='GRU', hidden_size=64, num_layers=1, dropout=0, bidirectional=False):
         super(DualEncoderNet, self).__init__()
