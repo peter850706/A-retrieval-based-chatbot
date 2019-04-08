@@ -1,0 +1,51 @@
+{
+    "train_path": "../data/train.pkl",
+    "valid_path": "../data/valid.pkl",
+    "test_path": "../data/test.pkl",
+    "embedding_path": "../data/embedding.pkl",
+    "train_context_padded_len": 350,
+    "train_option_padded_len": 50,
+    "valid_context_padded_len": 350,
+    "valid_option_padded_len": 50,
+    "test_context_padded_len": 350,
+    "test_option_padded_len": 50,
+    "train_n_negative": 4,
+    "model_parameters": {
+        "batch_size": 100,
+        "max_epochs": 1000,
+        "learning_rate": 0.001,
+        "weight_decay": 0,
+        "early_stopping": 5,
+        "grad_clipping": 100,
+        "frozen": true,
+        "fine_tuning": true,
+        "arch": {
+            "type": "DualEncoderAttentionPlusNet",
+            "args": {
+                "rnn_module": "GRU",
+                "hidden_size": 256,
+                "num_layers": 1,
+                "dropout": 0,
+                "bidirectional": true,
+                "mlp_dropout": 0.5
+            }
+        },
+        "loss": {
+            "type": "BCELoss",
+            "args": {}
+        },
+        "teacher": {
+            "type": "DualEncoderAttentionPlusNet",
+            "args": {
+                "rnn_module": "GRU",
+                "hidden_size": 256,
+                "num_layers": 1,
+                "dropout": 0,
+                "bidirectional": true,
+                "mlp_dropout": 0.5
+            },
+            "path": "../models/train_best/teacher2/exp/model.best.pkl",
+            "temperature": 1
+        }
+    }
+}

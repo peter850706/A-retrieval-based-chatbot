@@ -1,0 +1,13 @@
+{
+    "train_json_path": "../data/train.json",
+    "valid_json_path": "../data/valid.json",
+    "test_json_path": "../data/test.json",
+    "fasttext_model_path": "../data/cc.en.300.bin",
+    "dataset_args": {
+        "n_negative": 4, 
+        "n_positive": 1,
+        "context_padded_len": 350, 
+        "option_padded_len": 50,
+        "shuffle": true
+    }
+}

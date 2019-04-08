@@ -1,0 +1,20 @@
+{
+    "test_path": "./data/test.pkl",
+    "embedding_path": "./data/embedding.pkl",
+    "test_context_padded_len": 350,
+    "test_option_padded_len": 50,
+    "model_parameters": {
+        "batch_size": 100,
+        "arch": {
+            "type": "DualEncoderAttentionPlusNet",
+            "args": {
+                "rnn_module": "GRU",
+                "hidden_size": 256,
+                "num_layers": 1,
+                "dropout": 0,
+                "bidirectional": true,
+                "mlp_dropout": 0.5
+            }
+        }
+    }
+}
