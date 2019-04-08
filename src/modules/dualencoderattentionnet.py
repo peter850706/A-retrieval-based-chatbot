@@ -13,7 +13,6 @@ class DualEncoderAttentionNet(DualEncoderNet):
         num_layers (int): Number of recurrent layers. E.g., setting num_layers=2 would mean stacking two GRUs together to form a stacked GRU, with the second GRU taking in outputs of the first GRU and computing the final results.
         dropout (int): If non-zero, introduces a Dropout layer on the outputs of each GRU layer except the last layer, with dropout probability equal to dropout
         bidirectional (bool): If True, becomes a bidirectional GRU.
-        pooling_mode (str): The pooling mode to condense the rnn output features.
     """
     def __init__(self, dim_embedding, rnn_module='GRU', hidden_size=64, num_layers=1, dropout=0, bidirectional=False):
         super(DualEncoderAttentionNet, self).__init__(dim_embedding, rnn_module, hidden_size, num_layers, dropout, bidirectional)
@@ -30,7 +29,7 @@ class DualEncoderAttentionNet(DualEncoderNet):
                                     bidirectional=bidirectional)
         self.attention = Attention(hidden_size, bidirectional)
         
-        # transform option to "contextned" space for better similarity comparision
+        # transform option to "contexted" space for better similarity comparision
         features = 4 * hidden_size if bidirectional else 2 * hidden_size
         self.context_to_option = nn.Sequential(nn.Linear(features, features),
                                                nn.ReLU(inplace=True),
@@ -86,14 +85,14 @@ class Attention(nn.Module):
     """Attention: attention layer proposed by Luong et al. 
     ref: https://pytorch.org/tutorials/beginner/chatbot_tutorial.html#decoder
     Args:        
-        hidden_size (int): 
-        bidirectional (bool): 
+        hidden_size (int): refer to DualEncoderAttentionNet's argumemt
+        bidirectional (bool): refer to DualEncoderAttentionNet's argumemt
     """
     def __init__(self, hidden_size=64, bidirectional=False):
         super(Attention, self).__init__()
         self.hidden_size = hidden_size
         self.bidirectional = bidirectional
-        self.option_attention_weights = torch.randn([100, 50, 350], requires_grad=True)
+        self.option_attention_weights = torch.randn([100, 50, 350], requires_grad=True) # the attention map
         
         # transform option to "contextned" space for better similarity comparision
         if bidirectional:
@@ -102,7 +101,6 @@ class Attention(nn.Module):
                                                    nn.Linear(2 * hidden_size, 2 * hidden_size, bias=False))
         else:
             self.option_to_context = nn.Sequential(nn.Linear(hidden_size, hidden_size, bias=False),
-                                                   #nn.PReLU(hidden_size),
                                                    nn.ReLU(inplace=True),
                                                    nn.Linear(hidden_size, hidden_size, bias=False))
             
@@ -114,10 +112,9 @@ class Attention(nn.Module):
             option: (padded_option_len, batch, features)
             option_len (tensor): (batch, ) original length of the option
         """
-        #contexted_option = self.option_to_context(option.transpose(1, 0)) # contexted_option: (batch, padded_option_len, features)
         contexted_option = self.option_to_context(option.transpose(1, 0)) # contexted_option: (batch, padded_option_len, features)
         
-         # compute similarity by inner product, context.transpose(1, 0): (batch, padded_context_len, features), contexted_option.transpose(2, 1): (batch, features, padded_option_len), energies: (batch, padded_context_len, padded_option_len)
+        # compute similarity by inner product, context.transpose(1, 0): (batch, padded_context_len, features), contexted_option.transpose(2, 1): (batch, features, padded_option_len), energies: (batch, padded_context_len, padded_option_len)
         energies = torch.bmm(context.transpose(1, 0), contexted_option.transpose(2, 1))
         
         # compute attention weights by applying softmax, option_attention_weights: (batch, padded_option_len, padded_context_len)
